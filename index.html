@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Đại Lý - API Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        input, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .product-list { margin-top: 20px; }
+        .product-item { background: #f9f9f9; padding: 10px; margin-bottom: 8px; border-left: 4px solid #007bff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Tra cứu thông tin đại lý</h2>
+    <input type="text" id="apiKey" placeholder="Nhập API Key của bạn...">
+    <button onclick="checkInfo()">Kiểm tra</button>
+
+    <div id="result" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+async function checkInfo() {
+    const key = document.getElementById('apiKey').value.trim();
+    const resultDiv = document.getElementById('result');
+    
+    if (!key) {
+        alert('Vui lòng nhập API Key!');
+        return;
+    }
+
+    resultDiv.innerHTML = 'Đang tải dữ liệu...';
+
+    try {
+        let response = await fetch(`http://163.61.182.107/api/info?api_key=${key}`);
+        let data = await response.json();
+
+        if (data.status === 'success') {
+            let html = `<h3>Thông tin tài khoản</h3>
+                        <p><strong>User ID:</strong> ${data.user_id}</p>
+                        <p><strong>Số dư:</strong> <span style="color: green; font-weight: bold;">${data.balance.toLocaleString()}đ</span></p>
+                        <h4>Danh sách sản phẩm:</h4>
+                        <div class="product-list">`;
+            
+            for (let [code, prod] of Object.entries(data.products)) {
+                html += `<div class="product-item">
+                            <strong>${prod.name}</strong> (${code})<br>
+                            Giá: ${prod.price}đ | Kho: <strong>${prod.stock}</strong>
+                         </div>`;
+            }
+            html += `</div>`;
+            resultDiv.innerHTML = html;
+        } else {
+            resultDiv.innerHTML = '<p style="color: red;">API Key không hợp lệ hoặc có lỗi xảy ra!</p>';
+        }
+    } catch (error) {
+        resultDiv.innerHTML = '<p style="color: red;">Không thể kết nối đến máy chủ API!</p>';
+    }
+}
+</script>
+
+</body>
+</html>
