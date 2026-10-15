@@ -3,66 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Đại Lý - API Dashboard</title>
+    <title>Tài liệu API Đại Lý - Telegram Bot</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        input, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-        button { background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        .product-list { margin-top: 20px; }
-        .product-item { background: #f9f9f9; padding: 10px; margin-bottom: 8px; border-left: 4px solid #007bff; }
+        :root {
+            --primary: #007bff;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --code-bg: #f1f3f5;
+            --border-color: #dee2e6;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1, h2, h3 {
+            color: #1a1a1a;
+        }
+        h1 {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        h2 {
+            font-size: 20px;
+            margin-top: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        h3 {
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        code {
+            background-color: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 14px;
+            color: #d63384;
+        }
+        pre {
+            background-color: #212529;
+            color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 13px;
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .endpoint-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+            color: white;
+            margin-right: 8px;
+        }
+        .badge-get { background-color: #28a745; }
+        .badge-post { background-color: #ffc107; color: #212529; }
+        .url-box {
+            background: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            word-break: break-all;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Tra cứu thông tin đại lý</h2>
-    <input type="text" id="apiKey" placeholder="Nhập API Key của bạn...">
-    <button onclick="checkInfo()">Kiểm tra</button>
+    <h1>📌 Tài liệu Tích Hợp API Đại Lý</h1>
+    <p>Chào mừng các đối tác đại lý! Dưới đây là toàn bộ tài liệu hướng dẫn kết nối hệ thống tự động hóa mua hàng qua API của chúng tôi.</p>
 
-    <div id="result" style="margin-top: 20px;"></div>
-</div>
+    <h2>1. Thông số kết nối chung (Base URL)</h2>
+    <div class="url-box">http://163.61.182.107</div>
 
-<script>
-async function checkInfo() {
-    const key = document.getElementById('apiKey').value.trim();
-    const resultDiv = document.getElementById('result');
-    
-    if (!key) {
-        alert('Vui lòng nhập API Key!');
-        return;
-    }
+    <h2>2. Danh sách Endpoints API</h2>
 
-    resultDiv.innerHTML = 'Đang tải dữ liệu...';
-
-    try {
-        let response = await fetch(`http://163.61.182.107/api/info?api_key=${key}`);
-        let data = await response.json();
-
-        if (data.status === 'success') {
-            let html = `<h3>Thông tin tài khoản</h3>
-                        <p><strong>User ID:</strong> ${data.user_id}</p>
-                        <p><strong>Số dư:</strong> <span style="color: green; font-weight: bold;">${data.balance.toLocaleString()}đ</span></p>
-                        <h4>Danh sách sản phẩm:</h4>
-                        <div class="product-list">`;
-            
-            for (let [code, prod] of Object.entries(data.products)) {
-                html += `<div class="product-item">
-                            <strong>${prod.name}</strong> (${code})<br>
-                            Giá: ${prod.price}đ | Kho: <strong>${prod.stock}</strong>
-                         </div>`;
-            }
-            html += `</div>`;
-            resultDiv.innerHTML = html;
-        } else {
-            resultDiv.innerHTML = '<p style="color: red;">API Key không hợp lệ hoặc có lỗi xảy ra!</p>';
+    <h3>
+        <span class="endpoint-badge badge-get">GET</span>
+        A. Kiểm tra thông tin & số dư đại lý
+    </h3>
+    <ul>
+        <li><strong>Đường dẫn:</strong> <code>http://163.61.182.107/api/info?api_key=API_KEY_CUA_DAI_LY</code></li>
+        <li><strong>Mô tả:</strong> Trả về thông tin số dư tài khoản, mã định danh và danh sách sản phẩm cùng mức giá, số lượng tồn kho.</li>
+        <li><strong>Ví dụ Response (JSON):</strong></li>
+    </ul>
+    <pre><code>{
+    "status": "success",
+    "user_id": 8893370969,
+    "balance": 49600,
+    "products": {
+        "canva": {
+            "name": "Mailedu 7days",
+            "price": 200,
+            "stock": 6879
+        },
+        "netflix": {
+            "name": "Mailedu 24h",
+            "price": 150,
+            "stock": 0
         }
-    } catch (error) {
-        resultDiv.innerHTML = '<p style="color: red;">Không thể kết nối đến máy chủ API!</p>';
     }
-}
-</script>
+}</code></pre>
+
+    <h3>
+        <span class="endpoint-badge badge-post">POST</span>
+        B. Mua sản phẩm tự động
+    </h3>
+    <ul>
+        <li><strong>Đường dẫn:</strong> <code>http://163.61.182.107/api/buy</code></li>
+        <li><strong>Headers:</strong> <code>Content-Type: application/json</code></li>
+        <li><strong>Dữ liệu gửi lên (Body JSON):</strong></li>
+    </ul>
+    <pre><code>{
+    "api_key": "API_KEY_CUA_DAI_LY",
+    "product": "canva",
+    "quantity": 1
+}</code></pre>
+
+    <h2>3. Mã Code Mẫu Tích Hợp (Python)</h2>
+    <p>Đại lý có thể sử dụng đoạn code mẫu dưới đây để tích hợp trực tiếp vào hệ thống bot hoặc ứng dụng riêng:</p>
+    <pre><code>import requests
+
+# Thay API key của bạn vào đây
+API_KEY = "API_KEY_CUA_DAI_LY"
+BASE_URL = "http://163.61.182.107"
+
+# 1. Kiểm tra thông tin tài khoản & số dư
+def check_info():
+    response = requests.get(f"{BASE_URL}/api/info", params={"api_key": API_KEY})
+    print(response.json())
+
+# 2. Mua hàng tự động
+def buy_product(product_code, quantity=1):
+    payload = {
+        "api_key": API_KEY,
+        "product": product_code,
+        "quantity": quantity
+    }
+    response = requests.post(f"{BASE_URL}/api/buy", json=payload)
+    print(response.json())
+
+if __name__ == "__main__":
+    check_info()
+    # buy_product("canva", 1)</code></pre>
+</div>
 
 </body>
 </html>
